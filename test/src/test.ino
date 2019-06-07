@@ -1,14 +1,41 @@
-// setup() runs once, when the device is first turned on.
+int val = 0;
+
 void setup() {
-  // Put initialization like pinMode and begin functions here.
+  pinMode(D0, OUTPUT);
+  pinMode(D7, OUTPUT);
+  Particle.variable("analog", val);
 }
 
-// loop() runs over and over again, as quickly as it can execute.
-void loop() {
-  // The core of your code will likely live here.
+void publish_test() {
   String data = "hello world";
-  // Trigger the integration
   Particle.publish("test", data, PRIVATE);
-  // Wait 60 seconds
-  delay(60000);
+
+}
+
+void loop_blink_and_publish() {
+  for (int i = 0; i < 6; ++i) {
+    digitalWrite(D0, HIGH);
+    delay(200);
+    digitalWrite(D0, LOW);
+    delay(10000);
+  }
+
+  digitalWrite(D7, HIGH);
+  publish_test();
+  digitalWrite(D7, LOW);
+}
+
+void loop_light_sensor() {
+  val = analogRead(A5);
+  if (val > 3500) {
+    digitalWrite(D0, HIGH);
+    delay(200);
+    digitalWrite(D0, LOW);
+  }
+  
+  delay(100);
+}
+
+void loop() {
+  loop_light_sensor();
 }
