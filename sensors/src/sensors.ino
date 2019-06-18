@@ -5,21 +5,21 @@
 
 PietteTech_DHT DHT(DHTPIN, DHTTYPE);
 
-void setup()
-{
+void setup() {
   Spark.publish("log", DHTLIB_VERSION);
+  pinMode(A5, INPUT);
   DHT.begin();
 }
 
-void loop()
-{
-  Spark.publish("log", "Read sensor:");
-
+void loop() {
+  char topic[40];
+  int value = analogRead(A5);
+  sprintf(topic, "moist-%d", A5);
+  float moisturePerc = (100 - ((value / 4095.00) * 100 )); 
   int result = DHT.acquireAndWait(1000); // wait up to 1 sec (default indefinitely)
 
   switch (result) {
   case DHTLIB_OK:
-    Spark.publish("log", "OK");
     break;
   case DHTLIB_ERROR_CHECKSUM:
     Spark.publish("log", "Error\n\r\tChecksum error");
@@ -46,8 +46,8 @@ void loop()
     Spark.publish("log", "Unknown error");
     break;
   }
-  Spark.publish("log", String(DHT.getHumidity()));
-  Spark.publish("log", String(DHT.getCelsius()));
-
-  delay(2500);
+  Spark.publish(topic, String(moisturePerc));
+  Spark.publish("humidity", String(DHT.getHumidity()));
+  Spark.publish("temp", String(DHT.getCelsius()));
+  delay(1000);
 }
