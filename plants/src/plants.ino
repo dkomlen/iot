@@ -8,6 +8,7 @@ PietteTech_DHT DHT(DHTPIN, DHTTYPE);
 void setup() {
   Spark.publish("log", DHTLIB_VERSION);
   pinMode(A5, INPUT);
+  pinMode(A0, INPUT);
   DHT.begin();
 }
 
@@ -48,7 +49,7 @@ void loop() {
     Spark.publish("log", "Unknown error");
     break;
   }
-  char msg[40];
+  char msg[200];
   sprintf(msg, "%s:%d, %s:%f, %s:%f, %s:%f", 
     "light", light, 
     topic, moisturePerc, 
